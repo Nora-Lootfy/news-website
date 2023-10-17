@@ -1,3 +1,27 @@
+<?php
+require_once "../includes/connection.php";
+require_once "includes/logged.php";
+
+if($_SERVER["REQUEST_METHOD"] === "POST") {
+    try {
+        $fullname = $_POST["fullname"];
+        $username = $_POST["username"];
+        $email = $_POST["email"];
+        $active = isset($_POST["active"])? 1: 0;
+        $password = password_hash($_POST["password"], PASSWORD_DEFAULT);
+
+        $sql = "INSERT INTO `news_db`.`users`(`fullname`, `username`, `email`, `active`, `password`) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$fullname, $username, $email, $active, $password]);
+
+//        echo "Inserted Successfully";
+        header("Location: users.php") or die();
+    } catch (PDOException $e) {
+        echo "Error in post handling addUser.php: " . $e->getMessage();
+    }
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -7,7 +31,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<title>News Admin | Edit User</title>
+	<title>News Admin | Add User</title>
 
 	<!-- Bootstrap -->
 	<link href="vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -43,160 +67,25 @@
 
 					<div class="clearfix"></div>
 
-					<!-- menu profile quick info -->
-					<div class="profile clearfix">
-						<div class="profile_pic">
-							<img src="images/img.jpg" alt="..." class="img-circle profile_img">
-						</div>
-						<div class="profile_info">
-							<span>Welcome,</span>
-							<h2>John Doe</h2>
-						</div>
-					</div>
-					<!-- /menu profile quick info -->
+                    <?php
+                    include_once "includes/menu_profile_quick_info.php"
+                    ?>
 
-					<br />
+                    <br />
 
-					<!-- sidebar menu -->
-					<div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
-						<div class="menu_section">
-							<h3>General</h3>
-							<ul class="nav side-menu">
-								<li><a><i class="fa fa-users"></i> Users <span class="fa fa-chevron-down"></span></a>
-									<ul class="nav child_menu">
-										<li><a href="users.html">Users List</a></li>
-										<li><a href="addUser.html">Add User</a></li>
-									</ul>
-								</li>
-								<li><a><i class="fa fa-edit"></i> Categories <span class="fa fa-chevron-down"></span></a>
-									<ul class="nav child_menu">
-										<li><a href="addCategory.html">Add Category</a></li>
-										<li><a href="categories.html">Categories List</a></li>
-									</ul>
-								</li>
-								<li><a><i class="fa fa-desktop"></i> News <span class="fa fa-chevron-down"></span></a>
-									<ul class="nav child_menu">
-										<li><a href="addNews.html">Add News</a></li>
-										<li><a href="News.html">News List</a></li>
-									</ul>
-								</li>
-							</ul>
-						</div>
+                    <?php
+                    include_once "includes/sidebar_menu.php";
+                    ?>
 
-					</div>
-					<!-- /sidebar menu -->
+                    <?php
+                    include_once "includes/menu_footer.php";
+                    ?>
+                </div>
+            </div>
 
-					<!-- /menu footer buttons -->
-					<div class="sidebar-footer hidden-small">
-						<a data-toggle="tooltip" data-placement="top" title="Settings">
-							<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-						</a>
-						<a data-toggle="tooltip" data-placement="top" title="FullScreen">
-							<span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
-						</a>
-						<a data-toggle="tooltip" data-placement="top" title="Lock">
-							<span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
-						</a>
-						<a data-toggle="tooltip" data-placement="top" title="Logout" href="login.html">
-							<span class="glyphicon glyphicon-off" aria-hidden="true"></span>
-						</a>
-					</div>
-					<!-- /menu footer buttons -->
-				</div>
-			</div>
-
-			<!-- top navigation -->
-			<div class="top_nav">
-				<div class="nav_menu">
-					<div class="nav toggle">
-						<a id="menu_toggle"><i class="fa fa-bars"></i></a>
-					</div>
-					<nav class="nav navbar-nav">
-						<ul class=" navbar-right">
-							<li class="nav-item dropdown open" style="padding-left: 15px;">
-								<a href="javascript:;" class="user-profile dropdown-toggle" aria-haspopup="true" id="navbarDropdown" data-toggle="dropdown" aria-expanded="false">
-									<img src="images/img.jpg" alt="">John Doe
-								</a>
-								<div class="dropdown-menu dropdown-usermenu pull-right" aria-labelledby="navbarDropdown">
-									<a class="dropdown-item" href="javascript:;"> Profile</a>
-									<a class="dropdown-item" href="javascript:;">
-										<span class="badge bg-red pull-right">50%</span>
-										<span>Settings</span>
-									</a>
-									<a class="dropdown-item" href="javascript:;">Help</a>
-									<a class="dropdown-item" href="login.html"><i class="fa fa-sign-out pull-right"></i> Log Out</a>
-								</div>
-							</li>
-
-							<li role="presentation" class="nav-item dropdown open">
-								<a href="javascript:;" class="dropdown-toggle info-number" id="navbarDropdown1" data-toggle="dropdown" aria-expanded="false">
-									<i class="fa fa-envelope-o"></i>
-									<span class="badge bg-green">6</span>
-								</a>
-								<ul class="dropdown-menu list-unstyled msg_list" role="menu" aria-labelledby="navbarDropdown1">
-									<li class="nav-item">
-										<a class="dropdown-item">
-											<span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
-											<span>
-												<span>John Smith</span>
-												<span class="time">3 mins ago</span>
-											</span>
-											<span class="message">
-												Film festivals used to be do-or-die moments for movie makers. They were where...
-											</span>
-										</a>
-									</li>
-									<li class="nav-item">
-										<a class="dropdown-item">
-											<span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
-											<span>
-												<span>John Smith</span>
-												<span class="time">3 mins ago</span>
-											</span>
-											<span class="message">
-												Film festivals used to be do-or-die moments for movie makers. They were where...
-											</span>
-										</a>
-									</li>
-									<li class="nav-item">
-										<a class="dropdown-item">
-											<span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
-											<span>
-												<span>John Smith</span>
-												<span class="time">3 mins ago</span>
-											</span>
-											<span class="message">
-												Film festivals used to be do-or-die moments for movie makers. They were where...
-											</span>
-										</a>
-									</li>
-									<li class="nav-item">
-										<a class="dropdown-item">
-											<span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
-											<span>
-												<span>John Smith</span>
-												<span class="time">3 mins ago</span>
-											</span>
-											<span class="message">
-												Film festivals used to be do-or-die moments for movie makers. They were where...
-											</span>
-										</a>
-									</li>
-									<li class="nav-item">
-										<div class="text-center">
-											<a class="dropdown-item">
-												<strong>See All Alerts</strong>
-												<i class="fa fa-angle-right"></i>
-											</a>
-										</div>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</nav>
-				</div>
-			</div>
-			<!-- /top navigation -->
+            <?php
+            include_once "includes/top_navigation.php";
+            ?>
 
 			<!-- page content -->
 			<div class="right_col" role="main">
@@ -222,7 +111,7 @@
 						<div class="col-md-12 col-sm-12 ">
 							<div class="x_panel">
 								<div class="x_title">
-									<h2>Edit User</h2>
+									<h2>Add User</h2>
 									<ul class="nav navbar-right panel_toolbox">
 										<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
 										</li>
@@ -242,20 +131,20 @@
 								</div>
 								<div class="x_content">
 									<br />
-									<form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
+									<form action="" method="POST" id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
 
 										<div class="item form-group">
 											<label class="col-form-label col-md-3 col-sm-3 label-align" for="first-name">Full Name <span class="required">*</span>
 											</label>
 											<div class="col-md-6 col-sm-6 ">
-												<input type="text" id="first-name" required="required" class="form-control ">
+												<input type="text" id="first-name" required="required" class="form-control " name="fullname">
 											</div>
 										</div>
 										<div class="item form-group">
 											<label class="col-form-label col-md-3 col-sm-3 label-align" for="user-name">Username <span class="required">*</span>
 											</label>
 											<div class="col-md-6 col-sm-6 ">
-												<input type="text" id="user-name" name="user-name" required="required" class="form-control">
+												<input type="text" id="user-name" name="username" required="required" class="form-control">
 											</div>
 										</div>
 										<div class="item form-group">
@@ -268,7 +157,7 @@
 											<label class="col-form-label col-md-3 col-sm-3 label-align">Active</label>
 											<div class="checkbox">
 												<label>
-													<input type="checkbox" class="flat">
+													<input type="checkbox" name="active" value="active" class="flat">
 												</label>
 											</div>
 										</div>
@@ -282,8 +171,8 @@
 										<div class="ln_solid"></div>
 										<div class="item form-group">
 											<div class="col-md-6 col-sm-6 offset-md-3">
-												<button class="btn btn-primary" type="button">Cancel</button>
-												<button type="submit" class="btn btn-success">Update</button>
+												<button class="btn btn-primary" type="button" onclick="window.location='users.php';">Cancel</button>
+												<button type="submit" class="btn btn-success">Add</button>
 											</div>
 										</div>
 
