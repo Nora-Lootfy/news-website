@@ -1,10 +1,10 @@
-# news-website :shipit:
+# news-website 🚀:
 
 ## Introduction
 
 ## Table of Contents
-- [Top Level Design](#Top--Level--Design)
-- [User Manual](#User--Manual)
+- [Top Level Design](#Top-Level-Design)
+- [User Manual](#User-Manual)
 
 
 
