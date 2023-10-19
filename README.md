@@ -1,4 +1,4 @@
-# news-website 🚀:
+# News-website 📰
 
 ## Introduction
 
