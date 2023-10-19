@@ -29,8 +29,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     $_SESSION["logged"] = true;
                     $_SESSION["user"] = [
                         "fullname" => $row["fullname"],
-                        "username" => $row["username"],
-                        "id" => $row["id"]
+                        "id" => $row["id"],
+                        "supervisor" => $row["supervisor"]
                     ];
                     header("Location: users.php") or die();
                 } else {

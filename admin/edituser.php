@@ -6,8 +6,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     try {
         $params = [];
         $sql = "UPDATE `news_db`.`users` SET ";
+        if($_SESSION["user"]["supervisor"]) {
+            $fullname = $_POST["fullname"];
+            $username = $_POST["username"];
+            $email = $_POST["email"];
+            $password = password_hash($_POST["password"], PASSWORD_DEFAULT);
+            $active = isset($_POST["active"])? 1: 0;
 
-        if ($_POST["id"] == $_SESSION["user"]["id"]){
+            $params = [$fullname, $username, $email, $active, $password];
+            $sql = "UPDATE `news_db`.`users` SET `fullname`=?,`username`=?,`email`=?,`active`=?,`password`=?";
+
+        } elseif ($_POST["id"] == $_SESSION["user"]["id"]){ //owner
             $fields = ["fullname", "username", "email", "password"];
             foreach ($fields as $field) {
                 if (isset($_POST[$field])) {
@@ -46,7 +55,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
 } elseif (isset($_SERVER["HTTP_REFERER"]) and isset($_GET["id"])) {
-    $is_owner = $_GET["id"] == $_SESSION["user"]["id"];
+    $is_supervisor = $_SESSION["user"]["supervisor"];
+    $is_owner = $_SESSION["user"]["id"] == $_GET["id"];
 
     try {
         $id = $_GET["id"];
@@ -56,6 +66,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->execute([$id]);
 
         $user = $stmt->fetch();
+
+        $supervisor_user = $user["supervisor"];
+
     } catch (PDOException $e) {
         echo "Error in get handling edituser.php: " . $e->getMessage();
     }
@@ -182,7 +195,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                             <div class="col-md-6 col-sm-6 ">
                                                 <input type="hidden" name="id" value="<?= $user["id"] ?>" >
                                                 <input type="text" id="first-name" required="required" class="form-control " name="fullname" value="<?= $user["fullname"] ?>"
-                                                        <?= $is_owner? "": "disabled" ?> >
+                                                        <?= ($is_supervisor or $is_owner)? "": "disabled" ?> >
 											</div>
 										</div>
 										<div class="item form-group">
@@ -190,21 +203,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 											</label>
 											<div class="col-md-6 col-sm-6 ">
 												<input type="text" id="user-name" name="username" value="<?= $user["username"] ?>" required="required" class="form-control"
-                                                    <?= $is_owner? "": "disabled" ?> >
+                                                    <?= ($is_supervisor or $is_owner)? "": "disabled" ?> >
 											</div>
 										</div>
 										<div class="item form-group">
 											<label for="email" class="col-form-label col-md-3 col-sm-3 label-align">Email <span class="required">*</span></label>
 											<div class="col-md-6 col-sm-6 ">
 												<input id="email" class="form-control" type="email" name="email" value="<?= $user["email"] ?>" required="required"
-                                                    <?= $is_owner? "": "disabled" ?> >
+                                                    <?= ($is_supervisor or $is_owner)? "": "disabled" ?> >
 											</div>
 										</div>
 										<div class="item form-group">
 											<label class="col-form-label col-md-3 col-sm-3 label-align">Active</label>
 											<div class="checkbox">
 												<label>
-													<input type="checkbox" class="flat" name="active" value="active" <?= $user["active"]? "checked":"" ?> <?= $is_owner? "disabled": "" ?>>
+													<input type="checkbox" class="flat" name="active" value="active" <?= $user["active"]? "checked":"" ?> <?= ($is_supervisor or (!$supervisor_user and  !$is_owner))? "":"disabled" ?>>
 												</label>
 											</div>
 										</div>
@@ -212,7 +225,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 											<label class="col-form-label col-md-3 col-sm-3 label-align" for="password">Password <span class="required">*</span>
 											</label>
 											<div class="col-md-6 col-sm-6 ">
-												<input type="password" id="password" name="password" required="required" class="form-control" <?= $is_owner? "": "disabled" ?> value="**********">
+												<input type="password" id="password" name="password" required="required" class="form-control" <?= ($is_supervisor or $is_owner)? "": "disabled" ?> value="**********">
 											</div>
 										</div>
 										<div class="ln_solid"></div>
