@@ -11,8 +11,8 @@
             </li>
             <li><a><i class="fa fa-edit"></i> Categories <span class="fa fa-chevron-down"></span></a>
                 <ul class="nav child_menu">
-                    <li><a href="addCategory.html">Add Category</a></li>
-                    <li><a href="categories.html">Categories List</a></li>
+                    <li><a href="addCategory.php">Add Category</a></li>
+                    <li><a href="categories.php">Categories List</a></li>
                 </ul>
             </li>
             <li><a><i class="fa fa-desktop"></i> News <span class="fa fa-chevron-down"></span></a>
