@@ -10,11 +10,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $fullname = $_POST["fullname"];
             $username = $_POST["username"];
             $email = $_POST["email"];
-            $password = password_hash($_POST["password"], PASSWORD_DEFAULT);
             $active = isset($_POST["active"])? 1: 0;
 
-            $params = [$fullname, $username, $email, $active, $password];
-            $sql = "UPDATE `news_db`.`users` SET `fullname`=?,`username`=?,`email`=?,`active`=?,`password`=?";
+            if ($_POST["password"] != "**********") {
+                $password = password_hash($_POST["password"], PASSWORD_DEFAULT);
+                $params = [$fullname, $username, $email, $active, $password];
+                $sql = "UPDATE `news_db`.`users` SET `fullname`=?,`username`=?,`email`=?,`active`=?,`password`=?";
+            } else {
+                $params = [$fullname, $username, $email, $active];
+                $sql = "UPDATE `news_db`.`users` SET `fullname`=?,`username`=?,`email`=?,`active`=?";
+            }
 
         } elseif ($_POST["id"] == $_SESSION["user"]["id"]){ //owner
             $fields = ["fullname", "username", "email", "password"];
