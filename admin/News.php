@@ -3,16 +3,14 @@ require_once "includes/logged.php";
 require_once "../includes/connection.php";
 
 try {
-    $sql = "SELECT * FROM `news_db`.category";
+    $sql = "SELECT * FROM `news_db`.`news`";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
-
 } catch (PDOException $e) {
-    echo "Error in handling categories.php: " . $e->getMessage();
+    echo "Error in handling News.php: " . $e->getMessage();
 }
 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -22,7 +20,7 @@ try {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Categories</title>
+    <title>News</title>
 
     <!-- Bootstrap -->
     <link href="cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
@@ -76,12 +74,12 @@ try {
           include_once "includes/top_navigation.php";
           ?>
 
-          <!-- page content -->
+        <!-- page content -->
         <div class="right_col" role="main">
           <div class="">
             <div class="page-title">
               <div class="title_left">
-                <h3>Manage Categories</h3>
+                <h3>Manage News</h3>
               </div>
 
               <div class="title_right">
@@ -102,7 +100,7 @@ try {
               <div class="col-md-12 col-sm-12 ">
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2>List of Categories</h2>
+                    <h2>List of News</h2>
                     <ul class="nav navbar-right panel_toolbox">
                       <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                       </li>
@@ -125,7 +123,9 @@ try {
                     <table id="datatable" class="table table-striped table-bordered" style="width:100%">
                       <thead>
                         <tr>
-                          <th>Category Name</th>
+                          <th>News Date</th>
+                          <th>Title</th>
+                          <th>Active</th>
                           <th>Edit</th>
                           <th>Delete</th>
                         </tr>
@@ -134,12 +134,15 @@ try {
 
                       <tbody>
                       <?php
-                      foreach ($stmt->fetchAll() as $category):
+                      foreach ($stmt->fetchAll() as $news):
+                          $date = date("d M Y", strtotime($news["date"]));
                       ?>
                         <tr>
-                          <td><?= $category["category"] ?></td>
-                            <td><a href="editCategory.php?id=<?= $category["id"]?>"><img src="./images/edit.png" alt="Edit"></a></td>
-                            <td><a href="delete.php?table=category&id=<?= $category["id"]?>" onclick="return confirm('Are you sure you want to delete?')"><img src="./images/delete.png" alt="Delete"></a></td>
+                          <td><?= $date ?></td>
+                          <td><?= $news["title"] ?></td>
+                          <td><?= $news["active"]? "Yes":"No" ?></td>
+                            <td><a href="editNews.php?id=<?= $news["id"] ?>"><img src="./images/edit.png" alt="Edit"></a></td>
+                            <td><a href="delete.php?id=<?= $news["id"] ?>&table=news" onclick="return confirm('Are you sure you want to delete?')"><img src="./images/delete.png" alt="Delete"></a></td>
                         </tr>
                       <?php
                       endforeach;

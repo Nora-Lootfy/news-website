@@ -17,8 +17,8 @@
             </li>
             <li><a><i class="fa fa-desktop"></i> News <span class="fa fa-chevron-down"></span></a>
                 <ul class="nav child_menu">
-                    <li><a href="addNews.html">Add News</a></li>
-                    <li><a href="News.html">News List</a></li>
+                    <li><a href="addNews.php">Add News</a></li>
+                    <li><a href="News.php">News List</a></li>
                 </ul>
             </li>
         </ul>

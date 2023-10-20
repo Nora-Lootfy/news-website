@@ -12,7 +12,11 @@ if(isset($_GET["id"]) and isset($_GET["table"]) and isset($_SERVER["HTTP_REFERER
         $stmt->execute([$id]);
 
 //        echo "Deleted successfully";
-        header("Location: categories.php") or die();
+        if  ($table == "news"){
+            header("Location: News.php") or die();
+        } else {
+            header("Location: categories.php") or die();
+        }
     } catch (PDOException $e) {
         echo "Error in handling delete.php: " . $e->getMessage();
     }

@@ -1,3 +1,57 @@
+<?php
+require_once "includes/logged.php";
+require_once "../includes/connection.php";
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    try {
+        $oldImage = $_POST["old_image"];
+        require_once "includes/updateImage.php";
+
+        $date = $_POST["date"];
+        $title = $_POST["title"];
+        $content = $_POST["content"];
+        $author = $_POST["author"];
+        $active = isset($_POST["active"])? 1 : 0;
+        $featured = isset($_POST["featured"])? 1 : 0;
+        $breaking = isset($_POST["breaking"])? 1 : 0;
+        $cat_id = $_POST["category"];
+        $id = $_POST["id"];
+
+        $sql = "UPDATE `news_db`.`news` SET `date`=?,`title`=?,`content`=?,`author`=?,`active`=?,`image`=?,`featured`=?,`breaking`=?, `cat_id`=? WHERE `id`=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$date, $title, $content, $author, $active, $image_name, $featured, $breaking, $cat_id, $id]);
+
+//        echo "updated successfully";
+        header("Location: News.php") or die();
+
+    } catch (PDOException $e) {
+        echo "Error in post handling editNews.php: " . $e->getMessage();
+    }
+
+} elseif (isset($_SERVER["HTTP_REFERER"]) and isset($_GET["id"])) {
+
+    try {
+        $id = $_GET["id"];
+
+        $sql = "SELECT * FROM `news_db`.`news` WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$id]);
+
+        $news = $stmt->fetch();
+
+        $sql = "SELECT * FROM `news_db`.`category`";
+        $stmtCat = $conn->prepare($sql);
+        $stmtCat->execute();
+
+    } catch (PDOException $e) {
+        echo "Error in get handling editNews.php: " . $e->getMessage();
+    }
+
+} else {
+    header("Location: News.php") or die();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -43,160 +97,25 @@
 
 					<div class="clearfix"></div>
 
-					<!-- menu profile quick info -->
-					<div class="profile clearfix">
-						<div class="profile_pic">
-							<img src="images/img.jpg" alt="..." class="img-circle profile_img">
-						</div>
-						<div class="profile_info">
-							<span>Welcome,</span>
-							<h2>John Doe</h2>
-						</div>
-					</div>
-					<!-- /menu profile quick info -->
+                    <?php
+                    include_once "includes/menu_profile_quick_info.php"
+                    ?>
 
-					<br />
+                    <br />
 
-					<!-- sidebar menu -->
-					<div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
-						<div class="menu_section">
-							<h3>General</h3>
-							<ul class="nav side-menu">
-								<li><a><i class="fa fa-users"></i> Users <span class="fa fa-chevron-down"></span></a>
-									<ul class="nav child_menu">
-										<li><a href="users.php">Users List</a></li>
-										<li><a href="addUser.php">Add User</a></li>
-									</ul>
-								</li>
-								<li><a><i class="fa fa-edit"></i> Categories <span class="fa fa-chevron-down"></span></a>
-									<ul class="nav child_menu">
-										<li><a href="addCategory.php">Add Category</a></li>
-										<li><a href="categories.php">Categories List</a></li>
-									</ul>
-								</li>
-								<li><a><i class="fa fa-desktop"></i> News <span class="fa fa-chevron-down"></span></a>
-									<ul class="nav child_menu">
-										<li><a href="addNews.html">Add News</a></li>
-										<li><a href="News.html">News List</a></li>
-									</ul>
-								</li>
-							</ul>
-						</div>
+                    <?php
+                    include_once "includes/sidebar_menu.php";
+                    ?>
 
-					</div>
-					<!-- /sidebar menu -->
+                    <?php
+                    include_once "includes/menu_footer.php";
+                    ?>
+                </div>
+            </div>
 
-					<!-- /menu footer buttons -->
-					<div class="sidebar-footer hidden-small">
-						<a data-toggle="tooltip" data-placement="top" title="Settings">
-							<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-						</a>
-						<a data-toggle="tooltip" data-placement="top" title="FullScreen">
-							<span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
-						</a>
-						<a data-toggle="tooltip" data-placement="top" title="Lock">
-							<span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
-						</a>
-						<a data-toggle="tooltip" data-placement="top" title="Logout" href="login.php">
-							<span class="glyphicon glyphicon-off" aria-hidden="true"></span>
-						</a>
-					</div>
-					<!-- /menu footer buttons -->
-				</div>
-			</div>
-
-			<!-- top navigation -->
-			<div class="top_nav">
-				<div class="nav_menu">
-					<div class="nav toggle">
-						<a id="menu_toggle"><i class="fa fa-bars"></i></a>
-					</div>
-					<nav class="nav navbar-nav">
-						<ul class=" navbar-right">
-							<li class="nav-item dropdown open" style="padding-left: 15px;">
-								<a href="javascript:;" class="user-profile dropdown-toggle" aria-haspopup="true" id="navbarDropdown" data-toggle="dropdown" aria-expanded="false">
-									<img src="images/img.jpg" alt="">John Doe
-								</a>
-								<div class="dropdown-menu dropdown-usermenu pull-right" aria-labelledby="navbarDropdown">
-									<a class="dropdown-item" href="javascript:;"> Profile</a>
-									<a class="dropdown-item" href="javascript:;">
-										<span class="badge bg-red pull-right">50%</span>
-										<span>Settings</span>
-									</a>
-									<a class="dropdown-item" href="javascript:;">Help</a>
-									<a class="dropdown-item" href="login.php"><i class="fa fa-sign-out pull-right"></i> Log Out</a>
-								</div>
-							</li>
-
-							<li role="presentation" class="nav-item dropdown open">
-								<a href="javascript:;" class="dropdown-toggle info-number" id="navbarDropdown1" data-toggle="dropdown" aria-expanded="false">
-									<i class="fa fa-envelope-o"></i>
-									<span class="badge bg-green">6</span>
-								</a>
-								<ul class="dropdown-menu list-unstyled msg_list" role="menu" aria-labelledby="navbarDropdown1">
-									<li class="nav-item">
-										<a class="dropdown-item">
-											<span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
-											<span>
-												<span>John Smith</span>
-												<span class="time">3 mins ago</span>
-											</span>
-											<span class="message">
-												Film festivals used to be do-or-die moments for movie makers. They were where...
-											</span>
-										</a>
-									</li>
-									<li class="nav-item">
-										<a class="dropdown-item">
-											<span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
-											<span>
-												<span>John Smith</span>
-												<span class="time">3 mins ago</span>
-											</span>
-											<span class="message">
-												Film festivals used to be do-or-die moments for movie makers. They were where...
-											</span>
-										</a>
-									</li>
-									<li class="nav-item">
-										<a class="dropdown-item">
-											<span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
-											<span>
-												<span>John Smith</span>
-												<span class="time">3 mins ago</span>
-											</span>
-											<span class="message">
-												Film festivals used to be do-or-die moments for movie makers. They were where...
-											</span>
-										</a>
-									</li>
-									<li class="nav-item">
-										<a class="dropdown-item">
-											<span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
-											<span>
-												<span>John Smith</span>
-												<span class="time">3 mins ago</span>
-											</span>
-											<span class="message">
-												Film festivals used to be do-or-die moments for movie makers. They were where...
-											</span>
-										</a>
-									</li>
-									<li class="nav-item">
-										<div class="text-center">
-											<a class="dropdown-item">
-												<strong>See All Alerts</strong>
-												<i class="fa fa-angle-right"></i>
-											</a>
-										</div>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</nav>
-				</div>
-			</div>
-			<!-- /top navigation -->
+            <?php
+            include_once "includes/top_navigation.php";
+            ?>
 
 			<!-- page content -->
 			<div class="right_col" role="main">
@@ -242,39 +161,40 @@
 								</div>
 								<div class="x_content">
 									<br />
-									<form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
-										<div class="item form-group">
+									<form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left" action="" method="POST" enctype="multipart/form-data">
+										<input type="hidden" name="id" value="<?= $news["id"] ?>">
+                                        <div class="item form-group">
 											<label class="col-form-label col-md-3 col-sm-3 label-align" for="News-date">News Date <span class="required">*</span>
 											</label>
 											<div class="col-md-6 col-sm-6 ">
-												<input type="date" id="News-date" required="required" class="form-control ">
+												<input type="date" id="News-date" required="required" class="form-control " name="date" value="<?= $news["date"] ?>">
 											</div>
 										</div>
 										<div class="item form-group">
 											<label class="col-form-label col-md-3 col-sm-3 label-align" for="title">Title <span class="required">*</span>
 											</label>
 											<div class="col-md-6 col-sm-6 ">
-												<input type="text" id="title" required="required" class="form-control ">
+												<input type="text" id="title" required="required" class="form-control " name="title" value="<?= $news["title"] ?>">
 											</div>
 										</div>
 										<div class="item form-group">
 											<label class="col-form-label col-md-3 col-sm-3 label-align" for="content">Content <span class="required">*</span>
 											</label>
 											<div class="col-md-6 col-sm-6 ">
-												<textarea id="content" name="content" required="required" class="form-control">Contents</textarea>
+												<textarea id="content" name="content" required="required" class="form-control"><?= $news["content"] ?></textarea>
 											</div>
 										</div>
 										<div class="item form-group">
 											<label for="author" class="col-form-label col-md-3 col-sm-3 label-align">Author <span class="required">*</span></label>
 											<div class="col-md-6 col-sm-6 ">
-												<input id="author" class="form-control" type="text" name="author" required="required">
+												<input id="author" class="form-control" type="text" name="author" required="required" value="<?= $news["author"] ?>">
 											</div>
 										</div>
 										<div class="item form-group">
 											<label class="col-form-label col-md-3 col-sm-3 label-align">Active</label>
 											<div class="checkbox">
 												<label>
-													<input type="checkbox" class="flat">
+													<input type="checkbox" class="flat" name="active" <?= $news["active"]? "checked":"" ?>>
 												</label>
 											</div>
 										</div>
@@ -282,26 +202,47 @@
 											<label class="col-form-label col-md-3 col-sm-3 label-align" for="image">Image <span class="required">*</span>
 											</label>
 											<div class="col-md-6 col-sm-6 ">
-												<input type="file" id="image" name="image" required="required" class="form-control">
-											</div>
-										</div>
+												<input type="file" id="image" name="image"  class="form-control">
+                                                <input type="hidden" name="old_image" value="<?= $news["image"] ?>">
+                                                <br>
+                                                <img src="/img/<?= $news["image"] ?>" width="40%" alt="">
+                                            </div>
+                                        </div>
 
 										<div class="item form-group">
-											<label class="col-form-label col-md-3 col-sm-3 label-align" for="title">Category <span class="required">*</span>
+											<label class="col-form-label col-md-3 col-sm-3 label-align" for="cat">Category <span class="required">*</span>
 											</label>
 											<div class="col-md-6 col-sm-6 ">
-												<select class="form-control" name="category" id="">
-													<option value=" ">Select Category</option>
-													<option value="cat1">Category 1</option>
-													<option value="cat2">Category 2</option>
+												<select class="form-control" name="category" id="cat">
+                                                    <?php
+                                                    foreach ($stmtCat->fetchAll() as $category):
+                                                    ?>
+													<option value="<?= $category["id"] ?>" <?= ($category["id"] == $news["cat_id"])? "selected":"" ?>><?= $category["category"] ?></option>
+                                                    <?php
+                                                    endforeach;
+                                                    ?>
 												</select>
 											</div>
 										</div>
+                                        <div class="item form-group">
+                                            <label class="col-form-label col-md-3 col-sm-3 label-align">Featured News</label>
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" class="flat" name="featured" <?= $news["featured"]? "checked":"" ?>>
+                                                </label>
+                                            </div>
+                                            <label class="col-form-label col-md-3 col-sm-3 label-align">Breaking News</label>
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" class="flat" name="breaking" <?= $news["breaking"]? "checked":"" ?>>
+                                                </label>
+                                            </div>
+                                        </div>
 										<div class="ln_solid"></div>
 										<div class="item form-group">
 											<div class="col-md-6 col-sm-6 offset-md-3">
-												<button class="btn btn-primary" type="button">Cancel</button>
-												<button type="submit" class="btn btn-success">Add</button>
+												<button class="btn btn-primary" type="button" onclick="window.location='News.php';">Cancel</button>
+												<button type="submit" class="btn btn-success">EDIT</button>
 											</div>
 										</div>
 
