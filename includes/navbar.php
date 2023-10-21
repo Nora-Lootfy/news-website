@@ -1,3 +1,14 @@
+<?php
+
+$sql = "SELECT id, cat_id from news_db.news ORDER BY date DESC  LIMIT 1";
+$stmt = $conn->prepare($sql);
+$stmt->execute();
+
+$row = $stmt->fetch();
+
+$news_id = $row["id"];
+$cat_id = $row["cat_id"];
+?>
 <!-- Navbar Start -->
 <div class="container-fluid p-0">
     <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-2 py-lg-0 px-lg-5">
@@ -10,8 +21,8 @@
         <div class="collapse navbar-collapse justify-content-between px-0 px-lg-3" id="navbarCollapse">
             <div class="navbar-nav mr-auto py-0">
                 <a href="/index.php" class="nav-item nav-link active">Home</a>
-                <a href="/category.php" class="nav-item nav-link">Category</a>
-                <a href="/single.php" class="nav-item nav-link">Single News</a>
+                <a href="/category.php?id=<?= $cat_id ?>" class="nav-item nav-link">Category</a>
+                <a href="/single.php?id=<?= $news_id ?>" class="nav-item nav-link">Single News</a>
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Dropdown</a>
                     <div class="dropdown-menu rounded-0 m-0">
@@ -33,3 +44,16 @@
     </nav>
 </div>
 <!-- Navbar End -->
+
+<script>
+    anchors = Array.from(document.getElementsByClassName("nav-item nav-link"))
+
+    anchors.forEach(function (anchor) {
+        if (anchor.href === window.location.href) {
+            anchor.className = "nav-item nav-link active"
+        } else {
+            anchor.className = "nav-item nav-link"
+        }
+    })
+
+</script>

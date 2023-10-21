@@ -1,10 +1,11 @@
 <?php
-require_once "includes/connection.php";
 
 try {
     $sql = "SELECT title, id 
             FROM `news_db`.`news` 
-            WHERE active = 1 & breaking = 1 ";
+            WHERE active = 1 & breaking = 1
+            ORDER BY date DESC
+            LIMIT 5";
 
     $stmt = $conn->prepare($sql);
     $stmt->execute();

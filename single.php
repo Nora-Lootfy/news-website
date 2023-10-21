@@ -1,3 +1,34 @@
+<?php
+require_once "includes/connection.php";
+
+//print_r(isset($_GET["id"]));
+
+if(isset($_GET["id"])) {
+    $sql = "SELECT n.`id`, n.`date`, n.`title`, n.`image`, n.`cat_id`, c.category, n.views, n.content, n.author 
+            FROM news_db.news n JOIN news_db.category c 
+            ON c.id = n.cat_id
+            WHERE n.id = ?";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$_GET["id"]]);
+
+    $news = $stmt->fetch();
+    $news["views"]++;
+    $news["date"] = date("M, d, Y", strtotime($news["date"]));
+    $news["title"] = substr($news["title"], 0, 50);
+
+
+    $sql = "UPDATE news_db.news SET views=? WHERE id=?";
+    $stmtUpdateViews = $conn->prepare($sql);
+    $stmtUpdateViews->execute([$news["views"], $_GET["id"]]);
+
+//    print_r($news);
+
+} else {
+    header("Location: /index.php");
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -26,123 +57,12 @@
 </head>
 
 <body>
-    <!-- Topbar Start -->
-    <div class="container-fluid d-none d-lg-block">
-        <div class="row align-items-center bg-dark px-lg-5">
-            <div class="col-lg-9">
-                <nav class="navbar navbar-expand-sm bg-dark p-0">
-                    <ul class="navbar-nav ml-n2">
-                        <li class="nav-item border-right border-secondary">
-                            <a class="nav-link text-body small" href="#">Monday, January 1, 2045</a>
-                        </li>
-                        <li class="nav-item border-right border-secondary">
-                            <a class="nav-link text-body small" href="#">Advertise</a>
-                        </li>
-                        <li class="nav-item border-right border-secondary">
-                            <a class="nav-link text-body small" href="#">Contact</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-body small" href="#">Login</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-            <div class="col-lg-3 text-right d-none d-md-block">
-                <nav class="navbar navbar-expand-sm bg-dark p-0">
-                    <ul class="navbar-nav ml-auto mr-n2">
-                        <li class="nav-item">
-                            <a class="nav-link text-body" href="#"><small class="fab fa-twitter"></small></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-body" href="#"><small class="fab fa-facebook-f"></small></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-body" href="#"><small class="fab fa-linkedin-in"></small></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-body" href="#"><small class="fab fa-instagram"></small></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-body" href="#"><small class="fab fa-google-plus-g"></small></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-body" href="#"><small class="fab fa-youtube"></small></a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-        <div class="row align-items-center bg-white py-3 px-lg-5">
-            <div class="col-lg-4">
-                <a href="index.html" class="navbar-brand p-0 d-none d-lg-block">
-                    <h1 class="m-0 display-4 text-uppercase text-primary">Biz<span class="text-secondary font-weight-normal">News</span></h1>
-                </a>
-            </div>
-            <div class="col-lg-8 text-center text-lg-right">
-                <a href="https://htmlcodex.com"><img class="img-fluid" src="img/ads-728x90.png" alt=""></a>
-            </div>
-        </div>
-    </div>
-    <!-- Topbar End -->
+<?php
+include_once "includes/topbar.php";
+include_once "includes/navbar.php";
+include_once "includes/breaking_news_in_single.php";
+?>
 
-
-    <!-- Navbar Start -->
-    <div class="container-fluid p-0">
-        <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-2 py-lg-0 px-lg-5">
-            <a href="index.html" class="navbar-brand d-block d-lg-none">
-                <h1 class="m-0 display-4 text-uppercase text-primary">Biz<span class="text-white font-weight-normal">News</span></h1>
-            </a>
-            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-between px-0 px-lg-3" id="navbarCollapse">
-                <div class="navbar-nav mr-auto py-0">
-                    <a href="index.html" class="nav-item nav-link">Home</a>
-                    <a href="category.php" class="nav-item nav-link">Category</a>
-                    <a href="single.html" class="nav-item nav-link active">Single News</a>
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Dropdown</a>
-                        <div class="dropdown-menu rounded-0 m-0">
-                            <a href="#" class="dropdown-item">Menu item 1</a>
-                            <a href="#" class="dropdown-item">Menu item 2</a>
-                            <a href="#" class="dropdown-item">Menu item 3</a>
-                        </div>
-                    </div>
-                    <a href="contact.php" class="nav-item nav-link">Contact</a>
-                </div>
-                <div class="input-group ml-auto d-none d-lg-flex" style="width: 100%; max-width: 300px;">
-                    <input type="text" class="form-control border-0" placeholder="Keyword">
-                    <div class="input-group-append">
-                        <button class="input-group-text bg-primary text-dark border-0 px-3"><i
-                                class="fa fa-search"></i></button>
-                    </div>
-                </div>
-            </div>
-        </nav>
-    </div>
-    <!-- Navbar End -->
-
-
-    <!-- Breaking News Start -->
-    <div class="container-fluid mt-5 mb-3 pt-3">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-12">
-                    <div class="d-flex justify-content-between">
-                        <div class="section-title border-right-0 mb-0" style="width: 180px;">
-                            <h4 class="m-0 text-uppercase font-weight-bold">Trending</h4>
-                        </div>
-                        <div class="owl-carousel tranding-carousel position-relative d-inline-flex align-items-center bg-white border border-left-0"
-                            style="width: calc(100% - 180px); padding-right: 100px;">
-                            <div class="text-truncate"><a class="text-secondary text-uppercase font-weight-semi-bold" href="">Lorem ipsum dolor sit amet elit. Proin interdum lacus eget ante tincidunt, sed faucibus nisl sodales</a></div>
-                            <div class="text-truncate"><a class="text-secondary text-uppercase font-weight-semi-bold" href="">Lorem ipsum dolor sit amet elit. Proin interdum lacus eget ante tincidunt, sed faucibus nisl sodales</a></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Breaking News End -->
 
 
     <!-- News With Sidebar Start -->
@@ -152,35 +72,24 @@
                 <div class="col-lg-8">
                     <!-- News Detail Start -->
                     <div class="position-relative mb-3">
-                        <img class="img-fluid w-100" src="img/news-700x435-1.jpg" style="object-fit: cover;">
+                        <img class="img-fluid w-100" src="img/<?= $news["image"] ?>" style="object-fit: cover;">
                         <div class="bg-white border border-top-0 p-4">
                             <div class="mb-3">
                                 <a class="badge badge-primary text-uppercase font-weight-semi-bold p-2 mr-2"
-                                    href="">Business</a>
-                                <a class="text-body" href="">Jan 01, 2045</a>
+                                    href="/category.php?id=<?= $news["cat_id"] ?>"><?= $news["category"] ?></a>
+                                <a class="text-body" href=""><?= $news["date"] ?></a>
                             </div>
-                            <h1 class="mb-3 text-secondary text-uppercase font-weight-bold">Lorem ipsum dolor sit amet elit vitae porta diam...</h1>
-                            <p>Sadipscing labore amet rebum est et justo gubergren. Et eirmod ipsum sit diam ut
-                                magna lorem. Nonumy vero labore lorem sanctus rebum et lorem magna kasd, stet
-                                amet magna accusam consetetur eirmod. Kasd accusam sit ipsum sadipscing et at at
-                                sanctus et. Ipsum sit gubergren dolores et, consetetur justo invidunt at et
-                                aliquyam ut et vero clita. Diam sea sea no sed dolores diam nonumy, gubergren
-                                sit stet no diam kasd vero.</p>
-                            <p>Voluptua est takimata stet invidunt sed rebum nonumy stet, clita aliquyam dolores
-                                vero stet consetetur elitr takimata rebum sanctus. Sit sed accusam stet sit
-                                nonumy kasd diam dolores, sanctus lorem kasd duo dolor dolor vero sit et. Labore
-                                ipsum duo sanctus amet eos et. Consetetur no sed et aliquyam ipsum justo et,
-                                clita lorem sit vero amet amet est dolor elitr, stet et no diam sit. Dolor erat
-                                justo dolore sit invidunt.</p>
+                            <h1 class="mb-3 text-secondary text-uppercase font-weight-bold"><?= $news["title"] ?>...</h1>
+                            <p><?= $news["content"] ?></p>
                             
                         </div>
                         <div class="d-flex justify-content-between bg-white border border-top-0 p-4">
                             <div class="d-flex align-items-center">
                                 <img class="rounded-circle mr-2" src="img/user.jpg" width="25" height="25" alt="">
-                                <span>John Doe</span>
+                                <span><?= $news["author"] ?></span>
                             </div>
                             <div class="d-flex align-items-center">
-                                <span class="ml-3"><i class="far fa-eye mr-2"></i>12345</span>
+                                <span class="ml-3"><i class="far fa-eye mr-2"></i><?= $news["views"] ?></span>
                             </div>
                         </div>
                     </div>
@@ -224,83 +133,9 @@
                     </div>
                     <!-- Social Follow End -->
 
-                    <!-- Popular News Start -->
-                    <div class="mb-3">
-                        <div class="section-title mb-0">
-                            <h4 class="m-0 text-uppercase font-weight-bold">Trending News</h4>
-                        </div>
-                        <div class="bg-white border border-top-0 p-3">
-                            <div class="d-flex align-items-center bg-white mb-3" style="height: 110px;">
-                                <img class="img-fluid" src="img/news-110x110-1.jpg" alt="">
-                                <div class="w-100 h-100 px-3 d-flex flex-column justify-content-center border border-left-0">
-                                    <div class="mb-2">
-                                        <a class="badge badge-primary text-uppercase font-weight-semi-bold p-1 mr-2" href="">Business</a>
-                                        <a class="text-body" href=""><small>Jan 01, 2045</small></a>
-                                    </div>
-                                    <a class="h6 m-0 text-secondary text-uppercase font-weight-bold" href="">Lorem ipsum dolor sit amet elit...</a>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center bg-white mb-3" style="height: 110px;">
-                                <img class="img-fluid" src="img/news-110x110-2.jpg" alt="">
-                                <div class="w-100 h-100 px-3 d-flex flex-column justify-content-center border border-left-0">
-                                    <div class="mb-2">
-                                        <a class="badge badge-primary text-uppercase font-weight-semi-bold p-1 mr-2" href="">Business</a>
-                                        <a class="text-body" href=""><small>Jan 01, 2045</small></a>
-                                    </div>
-                                    <a class="h6 m-0 text-secondary text-uppercase font-weight-bold" href="">Lorem ipsum dolor sit amet elit...</a>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center bg-white mb-3" style="height: 110px;">
-                                <img class="img-fluid" src="img/news-110x110-3.jpg" alt="">
-                                <div class="w-100 h-100 px-3 d-flex flex-column justify-content-center border border-left-0">
-                                    <div class="mb-2">
-                                        <a class="badge badge-primary text-uppercase font-weight-semi-bold p-1 mr-2" href="">Business</a>
-                                        <a class="text-body" href=""><small>Jan 01, 2045</small></a>
-                                    </div>
-                                    <a class="h6 m-0 text-secondary text-uppercase font-weight-bold" href="">Lorem ipsum dolor sit amet elit...</a>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center bg-white mb-3" style="height: 110px;">
-                                <img class="img-fluid" src="img/news-110x110-4.jpg" alt="">
-                                <div class="w-100 h-100 px-3 d-flex flex-column justify-content-center border border-left-0">
-                                    <div class="mb-2">
-                                        <a class="badge badge-primary text-uppercase font-weight-semi-bold p-1 mr-2" href="">Business</a>
-                                        <a class="text-body" href=""><small>Jan 01, 2045</small></a>
-                                    </div>
-                                    <a class="h6 m-0 text-secondary text-uppercase font-weight-bold" href="">Lorem ipsum dolor sit amet elit...</a>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center bg-white mb-3" style="height: 110px;">
-                                <img class="img-fluid" src="img/news-110x110-5.jpg" alt="">
-                                <div class="w-100 h-100 px-3 d-flex flex-column justify-content-center border border-left-0">
-                                    <div class="mb-2">
-                                        <a class="badge badge-primary text-uppercase font-weight-semi-bold p-1 mr-2" href="">Business</a>
-                                        <a class="text-body" href=""><small>Jan 01, 2045</small></a>
-                                    </div>
-                                    <a class="h6 m-0 text-secondary text-uppercase font-weight-bold" href="">Lorem ipsum dolor sit amet elit...</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Popular News End -->
-
-                    <!-- Newsletter Start -->
-                    <div class="mb-3">
-                        <div class="section-title mb-0">
-                            <h4 class="m-0 text-uppercase font-weight-bold">Newsletter</h4>
-                        </div>
-                        <div class="bg-white text-center border border-top-0 p-3">
-                            <p>Aliqu justo et labore at eirmod justo sea erat diam dolor diam vero kasd</p>
-                            <div class="input-group mb-2" style="width: 100%;">
-                                <input type="text" class="form-control form-control-lg" placeholder="Your Email">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary font-weight-bold px-3">Sign Up</button>
-                                </div>
-                            </div>
-                            <small>Lorem ipsum dolor sit amet elit</small>
-                        </div>
-                    </div>
-                    <!-- Newsletter End -->
+                    <?php
+                    include_once "includes/trending_news.php";
+                    ?>
 
                     <!-- Tags Start -->
                     <div class="mb-3">
