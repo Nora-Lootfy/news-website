@@ -15,10 +15,10 @@ Introducing PHP-powered news website, a one-stop destination for the latest upda
 
 ## Top Level Design
 The Website have 4 main parts:
-1. [Users](#users).
-2. [Categories](#caregories).
-3. [News](#news).
-4. [Contact US](#contact-us)
+1. [Users](#users-).
+2. [Categories](#caregories-).
+3. [News](#news-).
+4. [Contact US](#contact-us-)
 
 ## Users 🙆
 Users have basic data **"fullname, email, username, password"** also controlling data  **"supervisor, active"**. 
