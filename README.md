@@ -30,10 +30,10 @@ There is two types of users:
 ## Categories 📂
 Categories is just a table that containes all catrgories names.
 
-## News 🗞️
+## News 🗞
 Here, we save the date, title, content, author, published, image, is featured, is breaking, views
 
-## Contact US ☎️
+## Contact US ☎
 This is for the data for users want to contact moderators of the website, it containes name, email, subject, message
 
 
