@@ -1,3 +1,24 @@
+<?php
+include_once "includes/connection.php";
+
+if($_SERVER["REQUEST_METHOD"] === "POST") {
+    $name =  $_POST["name"];
+    $email = $_POST["email"];
+    $subject = $_POST["subject"];
+    $message = $_POST["message"];
+    try {
+        $sql = "INSERT INTO news_db.contact (name, email, subject, message) VALUES (?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$name, $email, $subject, $message]);
+    } catch(PDOException $e) {
+        echo "Error in post handling contact.php: " . $e->getMessage();
+    }
+
+
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -26,102 +47,10 @@
 </head>
 
 <body>
-    <!-- Topbar Start -->
-    <div class="container-fluid d-none d-lg-block">
-        <div class="row align-items-center bg-dark px-lg-5">
-            <div class="col-lg-9">
-                <nav class="navbar navbar-expand-sm bg-dark p-0">
-                    <ul class="navbar-nav ml-n2">
-                        <li class="nav-item border-right border-secondary">
-                            <a class="nav-link text-body small" href="#">Monday, January 1, 2045</a>
-                        </li>
-                        <li class="nav-item border-right border-secondary">
-                            <a class="nav-link text-body small" href="#">Advertise</a>
-                        </li>
-                        <li class="nav-item border-right border-secondary">
-                            <a class="nav-link text-body small" href="#">Contact</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-body small" href="#">Login</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-            <div class="col-lg-3 text-right d-none d-md-block">
-                <nav class="navbar navbar-expand-sm bg-dark p-0">
-                    <ul class="navbar-nav ml-auto mr-n2">
-                        <li class="nav-item">
-                            <a class="nav-link text-body" href="#"><small class="fab fa-twitter"></small></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-body" href="#"><small class="fab fa-facebook-f"></small></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-body" href="#"><small class="fab fa-linkedin-in"></small></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-body" href="#"><small class="fab fa-instagram"></small></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-body" href="#"><small class="fab fa-google-plus-g"></small></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-body" href="#"><small class="fab fa-youtube"></small></a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-        <div class="row align-items-center bg-white py-3 px-lg-5">
-            <div class="col-lg-4">
-                <a href="index.html" class="navbar-brand p-0 d-none d-lg-block">
-                    <h1 class="m-0 display-4 text-uppercase text-primary">Biz<span class="text-secondary font-weight-normal">News</span></h1>
-                </a>
-            </div>
-            <div class="col-lg-8 text-center text-lg-right">
-                <a href="https://htmlcodex.com"><img class="img-fluid" src="img/ads-728x90.png" alt=""></a>
-            </div>
-        </div>
-    </div>
-    <!-- Topbar End -->
-
-
-    <!-- Navbar Start -->
-    <div class="container-fluid p-0">
-        <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-2 py-lg-0 px-lg-5">
-            <a href="index.html" class="navbar-brand d-block d-lg-none">
-                <h1 class="m-0 display-4 text-uppercase text-primary">Biz<span class="text-white font-weight-normal">News</span></h1>
-            </a>
-            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-between px-0 px-lg-3" id="navbarCollapse">
-                <div class="navbar-nav mr-auto py-0">
-                    <a href="index.html" class="nav-item nav-link">Home</a>
-                    <a href="category.php" class="nav-item nav-link">Category</a>
-                    <a href="single.php" class="nav-item nav-link">Single News</a>
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Dropdown</a>
-                        <div class="dropdown-menu rounded-0 m-0">
-                            <a href="#" class="dropdown-item">Menu item 1</a>
-                            <a href="#" class="dropdown-item">Menu item 2</a>
-                            <a href="#" class="dropdown-item">Menu item 3</a>
-                        </div>
-                    </div>
-                    <a href="contact.html" class="nav-item nav-link active">Contact</a>
-                </div>
-                <div class="input-group ml-auto d-none d-lg-flex" style="width: 100%; max-width: 300px;">
-                    <input type="text" class="form-control border-0" placeholder="Keyword">
-                    <div class="input-group-append">
-                        <button class="input-group-text bg-primary text-dark border-0 px-3"><i
-                                class="fa fa-search"></i></button>
-                    </div>
-                </div>
-            </div>
-        </nav>
-    </div>
-    <!-- Navbar End -->
-
+<?php
+include_once "includes/topbar.php";
+include_once "includes/navbar.php";
+?>
 
     <!-- Contact Start -->
     <div class="container-fluid mt-5 pt-3">
@@ -158,28 +87,35 @@
                             </div>
                         </div>
                         <h6 class="text-uppercase font-weight-bold mb-3">Contact Us</h6>
-                        <form>
+                        <form action="" method="POST">
                             <div class="form-row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <input type="text" class="form-control p-4" placeholder="Your Name" required="required"/>
+                                        <input type="text" class="form-control p-4" placeholder="Your Name" name="name" required="required"/>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <input type="email" class="form-control p-4" placeholder="Your Email" required="required"/>
+                                        <input type="email" class="form-control p-4" placeholder="Your Email" name="email" required="required"/>
                                     </div>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <input type="text" class="form-control p-4" placeholder="Subject" required="required"/>
+                                <input type="text" class="form-control p-4" placeholder="Subject" name="subject" required="required"/>
                             </div>
                             <div class="form-group">
-                                <textarea class="form-control" rows="4" placeholder="Message" required="required"></textarea>
+                                <textarea class="form-control" rows="4" placeholder="Message" name="message" required="required"></textarea>
                             </div>
-                            <div>
-                                <button class="btn btn-primary font-weight-semi-bold px-4" style="height: 50px;"
+                            <div class="form-row">
+                                <button class="btn btn-primary font-weight-semi-bold px-4 col-md-5" style="height: 50px;"
                                     type="submit">Send Message</button>
+                                <?php
+                                if ($_SERVER["REQUEST_METHOD"] === "POST"):
+                                ?>
+                                <div class="font-weight-semi-bold col-md-6"> WE have received your message, <a href="/index.php"> Back to main page</a></div>
+                                <?php
+                                endif;
+                                ?>
                             </div>
                         </form>
                     </div>

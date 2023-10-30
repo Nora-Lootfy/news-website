@@ -64,7 +64,7 @@ $without_views_section = <<<_WITHOUT_VIEWS_DIV
     <img class="img-fluid" src="/img/{image}" alt="" style="max-width: 100px;">
     <div class="w-100 h-100 px-3 d-flex flex-column justify-content-center border border-left-0">
         <div class="mb-2">
-            <a class="badge badge-primary text-uppercase font-weight-semi-bold p-1 mr-2" href="/category.php?id={id}">{category}</a>
+            <a class="badge badge-primary text-uppercase font-weight-semi-bold p-1 mr-2" href="/category.php?id={cat_id}">{category}</a>
             <a class="text-body" href=""><small>{date}</small></a>
         </div>
         <a class="h6 m-0 text-secondary text-uppercase font-weight-bold" href="/single.php?id={id}">{title}</a>
